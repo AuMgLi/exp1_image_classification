@@ -1,4 +1,5 @@
 import argparse
+import os
 import time
 import torch
 import torch.optim as optim
@@ -105,6 +106,9 @@ if __name__ == '__main__':
     parser.add_argument('--base_lr', type=float, default=0.01)
     opt = parser.parse_args()
     # print(opt)
+
+    if not os.path.exists('./weights/'):
+        os.mkdir('./weights/')
 
     train_loader, eval_loader = load_cifar10(batch_size=opt.batch_size)
     train(train_loader, eval_loader, opt)
