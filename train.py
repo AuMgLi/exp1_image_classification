@@ -30,10 +30,10 @@ class AverageMeter:
 
 def train(train_loader, eval_loader, opt):
     print('==> Start training...')
-    is_cuda = torch.cuda.is_available()
 
     summary_writer = SummaryWriter('./runs/' + str(int(time.time())))
 
+    is_cuda = torch.cuda.is_available()
     model = AlexNet()
     if is_cuda:
         model = model.cuda()
