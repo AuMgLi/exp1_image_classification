@@ -28,6 +28,12 @@ class AverageMeter:
         self.avg = self.sum / self.count
 
 
+def calc_reg(model: AlexNet):
+    reg_loss = None
+    # TODO
+    return reg_loss
+
+
 def train(train_loader, eval_loader, opt):
     print('==> Start training...')
 
@@ -42,7 +48,6 @@ def train(train_loader, eval_loader, opt):
         params=model.parameters(),
         lr=opt.base_lr,
         momentum=0.9,
-        weight_decay=0.0005,
     )
     criterion = nn.CrossEntropyLoss()
 
@@ -61,16 +66,18 @@ def train(train_loader, eval_loader, opt):
             outputs = model(inputs)
             loss = criterion(outputs, targets)
             losses.update(loss.item(), outputs.shape[0])
-            summary_writer.add_scalar('train loss', loss, global_step)
+            summary_writer.add_scalar('train/loss', loss, global_step)
 
             _, preds = torch.max(outputs, dim=1)
             acc = preds.eq(targets).sum().item() / len(targets)
             accuracies.update(acc)
-            summary_writer.add_scalar('train acc', acc, global_step)
+            summary_writer.add_scalar('train/acc', acc, global_step)
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+
+        summary_writer.add_scalar('lr', optimizer.param_groups[0]['lr'], global_step)
         print('==> Epoch: %d; Average Train Loss: %.4f; Average Train Acc: %.4f' %
               (epoch, losses.avg, accuracies.avg))
 
@@ -90,8 +97,8 @@ def train(train_loader, eval_loader, opt):
             acc = preds.eq(targets).sum().item() / len(targets)
             accuracies.update(acc)
 
-        summary_writer.add_scalar('eval loss', losses.avg, global_step)
-        summary_writer.add_scalar('eval acc', accuracies.avg, global_step)
+        summary_writer.add_scalar('eval/loss', losses.avg, global_step)
+        summary_writer.add_scalar('eval/acc', accuracies.avg, global_step)
         if accuracies.avg > best_eval_acc:
             best_eval_acc = accuracies.avg
             torch.save(model, './weights/best.pt')
@@ -105,7 +112,6 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=128)
     parser.add_argument('--base_lr', type=float, default=0.01)
     opt = parser.parse_args()
-    # print(opt)
 
     if not os.path.exists('./weights/'):
         os.mkdir('./weights/')

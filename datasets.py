@@ -1,4 +1,3 @@
-import torch
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from torch.utils.data import DataLoader
@@ -11,7 +10,6 @@ def load_cifar10(batch_size=128, num_workers=0, size=32):
 
     transform_train = transforms.Compose([
         transforms.Resize((size, size)),
-        transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
